@@ -99,6 +99,26 @@ class TaskController extends Controller
         return Files::where('task_id', $orderId)->get();
     }
 
+    public function addFiles(Request $request, $orderId)
+    {
+        $request->validate([
+            'pics' => 'required',
+        ]);
+
+        if ($request->pics) {
+            $uploadedFiles=$request->pics;
+            foreach ($uploadedFiles as $file){
+                $filename = $file->store('uploads');
+                // echo $filename;
+                $file = new Files();
+                $file->task_id = $orderId;
+                $file->path = $filename;
+                $file->user_id = auth()->user()->id;
+                $file->save();
+            }
+        }
+    }
+
     public function downloadFile($id)
     {
         // echo $path;

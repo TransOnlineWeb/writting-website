@@ -1,4 +1,4 @@
-<template>
+ <template>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -58,9 +58,12 @@
                             <div class="col-md-6">
                                 <div class="box">
                                     <div class="box-header">
-                                        <h4 class="box-title">Files</h4>
+                                        <h5 class="box-title">Files Sent</h5>
+                                        <div class="box-tools">
+                                            <button class="btn btn-primary btn-sm" @click="newModal">Add Files</button>
+                                        </div>
                                     </div>
-                                    <div class="box-body" v-if="this.filesCount > 0">
+                                    <div class="box-body" v-if="this.filesCount > 0" style="padding-top: 10px;">
                                         <div class="row">
                                             <div class="col-md-6 col-sm-6 col-xs-12" v-for="file in files" :key="file.id">
                                                 <a href="#" @click="download(file.id)">
@@ -89,6 +92,30 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="addnew" tabindex="-1" role="dialog" aria-labelledby="addnewLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addnewLabel">Add Files</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form @submit.prevent="submit()">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="files">Upload Files</label>
+                                <input type="file" multiple class="form-control-file" @change="fieldChange" id="files">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -99,10 +126,52 @@
                 orderId: this.$route.params.orderId,
                 details: {},
                 filesCount: {},
-                files: {}
+                files: {},
+                attachments:[],
+                formf: new FormData(),
+                form: new Form({
+
+                })
             }
         },
         methods:{
+            submit(){
+              for(let i=0; i<this.attachments.length;i++){
+                    this.formf.append('pics[]',this.attachments[i]);
+                }
+
+                const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+
+              axios.post('/api/addFiles/' + this.orderId,this.formf,config).then(response=>{
+                Fire.$emit('entry');
+                $('#addnew').modal('hide');
+                this.form.reset();
+                swal.fire({
+                      type: 'success',
+                      title: 'Submited!!',
+                      text: 'Files added successfully',
+
+                    })
+
+                })
+                    .catch(response=>{
+                        //error
+                    });
+            },
+            fieldChange(e){
+                let selectedFiles=e.target.files;
+                if(!selectedFiles.length){
+                    return false;
+                }
+                for(let i=0;i<selectedFiles.length;i++){
+                    this.attachments.push(selectedFiles[i]);
+                }
+                console.log(this.attachments);
+            },
+            newModal(){
+                this.form.reset();
+                $('#addnew').modal('show');
+            },
             download(id){
                 axios.get("/api/download/" + id).then();
             },
@@ -122,6 +191,11 @@
             this.getDetails();
             this.getFilesCount();
             this.getFiles();
+            Fire.$on('entry', () =>{
+                this.getDetails();
+                this.getFilesCount();
+                this.getFiles();
+            })
         }
     }
 </script>

@@ -5,7 +5,9 @@
                 <div class="card mt-4">
                     <div class="card-header">
                         <h3 class="card-title">My Orders</h3>
-                      <button class="btn btn-success pull-left" href="order">Add<i class="fa fa-user-plus fa-fw"></i></button>
+                        <div class="card-tools">
+                            <button class="btn btn-success pull-left">Add<i class="fa fa-user-plus fa-fw"></i></button>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -24,9 +26,11 @@
                                 </thead>
                                 <tbody>
                                 <tr v-for="order in orders" :key="order.id">
-                                    <td>{{order.id}}</td>
-                                    <td>{{order.task}}</td>
+                                    <td>#{{order.id}}</td>
+                                    <td>{{order.title}}</td>
                                     <td>{{order.subject_name}}</td>
+                                    <td>{{order.status}}</td>
+                                  <td>{{order.subject_name}}</td>
                                     <td>
                                         <span class="badge badge-pill badge-warning" v-if="order.status == 'Pending'">Pending..</span>
                                         <span class="badge badge-pill badge-info" v-if="order.status == 'Paid'">Paid</span>
@@ -100,6 +104,35 @@
             getOrders(){
                 axios.get("api/student-task").then(({ data }) => ([this.orders = data]));
             },
+            editModal(order, id){
+                $('#addnew').modal('show');
+                this.form.fill(order);
+                this.form.id = id;
+            },
+            updateStatus(){
+                this.form.put('api/task/' + this.form.id)
+                    .then(()=>{
+                        $('#addnew').modal('hide');
+                        swal.fire(
+                            'Updated!',
+                            'Status has been updated.',
+                            'success'
+                        )
+                        Fire.$emit('entry');
+                    })
+                    .catch(()=>{
+
+                    })
+            }
+                                        <a href="#" @click="editModal(order, order.id)">
+                                <label>Select Option</label>
+                                    <option value="Approved">Approve submitted Work</option>
+                                    <option value="Revision">Order Revision</option>
+                orders: {},
+                form: new Form({
+                    status: '',
+                    id: ''
+                })
             editModal(order, id){
                 $('#addnew').modal('show');
                 this.form.fill(order);
