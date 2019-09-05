@@ -24,16 +24,23 @@
                                 </thead>
                                 <tbody>
                                 <tr v-for="order in orders" :key="order.id">
-                                    <td>#{{order.id}}</td>
+                                    <td>{{order.id}}</td>
                                     <td>{{order.task}}</td>
-                                    <td>{{order.status}}</td>
                                     <td>{{order.subject_name}}</td>
+                                    <td>
+                                        <span class="badge badge-pill badge-warning" v-if="order.status == 'Pending'">Pending..</span>
+                                        <span class="badge badge-pill badge-info" v-if="order.status == 'Paid'">Paid</span>
+                                        <span class="badge badge-pill badge-dark" v-if="order.status == 'Working'">Working</span>
+                                        <span class="badge badge-pill badge-primary" v-if="order.status == 'Completed'">Completed</span>
+                                        <span class="badge badge-pill badge-success" v-if="order.status == 'Approved'">Approved</span>
+                                        <span class="badge badge-pill badge-danger" v-if="order.status == 'Revision'">Revision</span>
+                                    </td>
                                     <td><i class="fa fa-clock-o mr-1"></i>{{order.deadline_datetime | myDate}}</td>
                                     <td>
                                         <router-link :to="{path:'/MyOrderDetails/'+ order.id}" type="button" class="btn btn-primary btn-sm">More</router-link>
                                     </td>
                                     <td>
-                                        <a href="#" @click="deleteorder(order.id)">
+                                        <a href="#" @click="editModal(order, order.id)">
                                             <i class="fa fa-pen p-1 text-danger"></i>
                                         </a>
                                     </td>
@@ -58,13 +65,11 @@
                         <div class="modal-body">
 
                             <div class="form-group">
-                                <label>Select Role</label>
+                                <label>Select Option</label>
                                 <select name="status" v-model="form.status" class="form-control" :class="{'is-invalid': form.errors.has('status')}">
                                     <option value="">--Select Status--</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Paid">Paid</option>
-                                    <option value="Working">Working</option>
-                                    <option value="Completed">Completed</option>
+                                    <option value="Approved">Approve submitted Work</option>
+                                    <option value="Revision">Order Revision</option>
                                 </select>
                                 <has-error :form="form" field="status"></has-error>
                             </div>
@@ -84,13 +89,37 @@
     export default {
         data(){
             return{
-                orders: {}
+                orders: {},
+                form: new Form({
+                    status: '',
+                    id: ''
+                })
             }
         },
         methods:{
             getOrders(){
                 axios.get("api/student-task").then(({ data }) => ([this.orders = data]));
             },
+            editModal(order, id){
+                $('#addnew').modal('show');
+                this.form.fill(order);
+                this.form.id = id;
+            },
+            updateStatus(){
+                this.form.put('api/task/' + this.form.id)
+                    .then(()=>{
+                        $('#addnew').modal('hide');
+                        swal.fire(
+                            'Updated!',
+                            'Status has been updated.',
+                            'success'
+                        )
+                        Fire.$emit('entry');
+                    })
+                    .catch(()=>{
+
+                    })
+            }
         },
         created() {
             this.getOrders();
