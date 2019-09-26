@@ -6,7 +6,7 @@
                     <div class="card-header">
                         <h3 class="card-title">My Orders</h3>
                         <div class="card-tools">
-                            <button class="btn btn-success pull-left">Add<i class="fa fa-user-plus fa-fw"></i></button>
+                            <a href="/task"><button class="btn btn-success pull-left">Add new order &nbsp;<i class="fas fa-plus"></i></button></a>
                         </div>
                     </div>
 
@@ -29,8 +29,6 @@
                                     <td>#{{order.id}}</td>
                                     <td>{{order.title}}</td>
                                     <td>{{order.subject_name}}</td>
-                                    <td>{{order.status}}</td>
-                                  <td>{{order.subject_name}}</td>
                                     <td>
                                         <span class="badge badge-pill badge-warning" v-if="order.status == 'Pending'">Pending..</span>
                                         <span class="badge badge-pill badge-info" v-if="order.status == 'Paid'">Paid</span>
@@ -91,6 +89,12 @@
 
 <script>
     export default {
+        props:{
+            user: {
+                type: Object,
+                required: true
+            }
+        },
         data(){
             return{
                 orders: {},
@@ -99,6 +103,12 @@
                     id: ''
                 })
             }
+        },
+        mounted() {
+            Echo.private(`message.${this.user.id}`)
+                .listen('ChatEvent',(e)=>{
+                    this.$emit('newMessage', e.message);
+                })
         },
         methods:{
             getOrders(){
@@ -123,16 +133,8 @@
                     .catch(()=>{
 
                     })
-            }
-                                        <a href="#" @click="editModal(order, order.id)">
-                                <label>Select Option</label>
-                                    <option value="Approved">Approve submitted Work</option>
-                                    <option value="Revision">Order Revision</option>
-                orders: {},
-                form: new Form({
-                    status: '',
-                    id: ''
-                })
+            },
+
             editModal(order, id){
                 $('#addnew').modal('show');
                 this.form.fill(order);

@@ -87,7 +87,7 @@
                                         @endif
                                     @endauth
                                 </li>
-                            </ul>  --}} 
+                            </ul>  --}}
                           </div>
                       @endif
                   </div>
@@ -145,7 +145,7 @@
             </div>
         </nav>
  --}}
-        
+
         @yield('content')
     </div>
 </body>

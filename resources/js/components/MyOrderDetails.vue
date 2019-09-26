@@ -6,7 +6,6 @@
                     <div class="card-header">
                         <h3 class="card-title">Order Details</h3>
                     </div>
-
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -60,7 +59,7 @@
                                     <div class="box-header">
                                         <h5 class="box-title">Files Sent</h5>
                                         <div class="box-tools">
-                                            <button class="btn btn-primary btn-sm" @click="newModal">Add Files</button>
+                                            <button class="btn btn-primary btn-sm" @click="newModal"><i class="fas fa-paperclip"></i>Add Files</button>
                                         </div>
                                     </div>
                                     <div class="box-body" v-if="this.filesCount > 0" style="padding-top: 10px;">
@@ -85,6 +84,31 @@
                                         <h5><i class="icon fa fa-ban"></i> Alert!</h5>
                                         No files attached!!
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-12">
+                                <div class="card-body composer">
+                                    <textarea v-model="message"  placeholder="Write your question here..."></textarea><br>
+                                    <div class="col-md-10">
+                                    <button class="btn btn-success btn-md pull-left"  @click="sendMessage"><i class="fas fa-paper-plane"></i>&nbsp;Send message</button>
+                                      <button class="btn btn-primary btn-md pull-right" @click="newModal"><i class="fas fa-paperclip"></i>&nbsp;Add Files</button>
+                                    </div>
+                                </div>
+                            </div>
+                           </div><hr>
+                           <div class="row">
+                            <div class="card-body conversation" >
+                                <h1>Messages</h1>
+                                <div class="card-body feed" ref="feed">
+                                    <ul>
+                                        <li v-for="message in messages" :class="`message${message.to == users ? ' sent' : ' received'}`" :key="message.id">
+                                            <div class="text">
+                                                <span class="messo">{{ message.text }}</span><br/><small class="date">{{message.created_at | myDate}}</small>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -121,8 +145,17 @@
 
 <script>
     export default {
+        props:{
+            user: {
+                type: Object,
+                required: true
+            }
+        },
         data(){
             return{
+                message: '',
+                users : {},
+                messages:[],
                 orderId: this.$route.params.orderId,
                 details: {},
                 filesCount: {},
@@ -130,11 +163,28 @@
                 attachments:[],
                 formf: new FormData(),
                 form: new Form({
-
                 })
             }
         },
+        mounted() {
+            Echo.private(`message.${this.user.id}`)
+                .listen('ChatEvent',(e)=>{
+                    this.messages.push(e.message);
+                })
+        },
         methods:{
+            handleIncoming(message) {
+                    this.messages.push(message);
+
+            },
+            scrollToBottom(){
+                setTimeout(()=>{
+                    this.$refs.feed.scrollTop = this.$refs.feed.scrollHeight - this.$refs.feed.clientHeight;
+                },50);
+            },
+            saveNewMessage(message){
+                this.messages.push(message);
+            },
             submit(){
               for(let i=0; i<this.attachments.length;i++){
                     this.formf.append('pics[]',this.attachments[i]);
@@ -157,6 +207,28 @@
                     .catch(response=>{
                         //error
                     });
+            },
+            send(e){
+
+                if(this.message == ''){
+                    return;
+                }
+                this.$emit('send',this.message);
+                this.message = '';
+            },
+            sendMessage(e) {
+                e.preventDefault();
+                if ( this.message == '') {
+                    return;
+                }
+                axios.post('/api/messenger/send', {
+                    text: this.message,
+                    OrderId : this.orderId,
+                    contact_id : this.users,
+                }).then((response) => {
+                    this.messages.push(response.data);
+                    this.message = '';
+                })
             },
             fieldChange(e){
                 let selectedFiles=e.target.files;
@@ -186,16 +258,100 @@
             getFiles(){
                 axios.get("/api/getFiles/" + this.orderId).then(({ data }) => ([this.files = data]));
             },
+            getUser(){
+                if (this.$gate.isAdmin()) {
+                    axios.get("/api/getUser/" + this.orderId).then(({ data }) => ([this.users = data]));
+                }
+                if (this.$gate.isStudent()) {
+                    axios.get("/api/getAdmin/").then(({ data }) => ([this.users = data]));
+                }
+
+            },
+            getMessages(){
+                axios.get("/api/getMessage/" + this.orderId).then((response) => (this.messages = response.data));
+            },
+        },
+        watch: {
+            messages(messages){
+                this.scrollToBottom();
+            }
         },
         created() {
             this.getDetails();
             this.getFilesCount();
             this.getFiles();
+            this.getUser();
+            this.getMessages();
             Fire.$on('entry', () =>{
                 this.getDetails();
                 this.getFilesCount();
                 this.getFiles();
+                this. getMessages();
             })
         }
     }
 </script>
+ <style lang="scss" scoped>
+     .composer textarea {
+         width: 80%;
+         margin: 10px;
+         border-radius: 3px;
+         border: 1px solid lightgray;
+         padding: 6px;
+     }
+     .conversation {
+         overflow-y: scroll;
+         flex: 5;
+         display: flex;
+         flex-direction: column;
+         justify-content: space-between;
+         h1 {
+             font-size: 20px;
+             padding: 10px;
+             margin: 0;
+             border-bottom: 1px dashed lightgray;
+         }
+     }
+     .messo{
+         font-size: 15px;
+         font-weight:700;
+     }
+     .date{
+         color:#9e9e9e;
+         font-weight:700;
+     }
+     .feed {
+         background: #f0f0f0;
+         height: 100%;
+         max-height: 470px;
+         overflow: scroll;
+         ul {
+             list-style-type: none;
+             padding: 5px;
+             li {
+                 &.message {
+                     margin: 10px 0;
+                     width: 100%;
+                     .text {
+                         max-width: 400px;
+                         border-radius: 5px;
+                         padding: 12px;
+                         display: inline-block;
+                     }
+                     &.received {
+                         text-align: right;
+                         .text {
+                             background: #00e676;
+                         }
+                     }
+                     &.sent {
+                         text-align: left;
+                         .text {
+                             background: #81c4f9;
+                         }
+                     }
+                 }
+             }
+         }
+     }
+ </style>

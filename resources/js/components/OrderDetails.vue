@@ -10,12 +10,12 @@
                     <div class="card-body">
                         <div class="row">
                         <div class="col-md-6">
-          <div class="box">
-            <div class="box-header">
+              <div class="box">
+                <div class="box-header">
               <h4 class="box-title">Client Details</h4>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body no-padding table-responsive p-0">
+              </div>
+               <!-- /.box-header -->
+               <div class="box-body no-padding table-responsive p-0">
               <table class="table">
                 <tbody><tr>
                   <th>Title</th>
@@ -146,8 +146,33 @@
             </div>
         </div>
     </div>
-        </div>
+
                     </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-12">
+                        <div class="card-body composer">
+                            <textarea v-model="message"  placeholder="Write your question here..."></textarea><br>
+                            <div class="col-md-10">
+                                <button class="btn btn-success btn-md pull-left"  @click="sendMessage"><i class="fas fa-paper-plane"></i>&nbsp;Send message</button>
+                            </div>
+                        </div>
+                    </div>
+                </div><hr>
+                <div class="row">
+                    <div class="card-body conversation"  @new="handleIncoming">
+                        <h1>Messages</h1>
+                        <div class="card-body feed" ref="feed">
+                            <ul>
+                                <li v-for="message in messages" :class="`message${message.to == users ? ' sent' : ' received'}`" :key="message.id">
+                                    <div class="text">
+                                        <span class="messo">{{ message.text }}</span><br/><small class="date">{{message.created_at | myDate}}</small>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -156,15 +181,52 @@
 
 <script>
     export default {
+        props:{
+            user: {
+                type: Object,
+                required: true
+            }
+        },
         data(){
             return{
+                message: '',
+                users : {},
+                messages:[],
                 orderId: this.$route.params.orderId,
                 details: {},
                 filesCount: {},
                 files: {}
             }
         },
+        mounted() {
+            Echo.private(`message.${this.user.id}`)
+                .listen('ChatEvent',(e)=>{
+                    this.messages.push(e.message);
+                })
+        },
         methods:{
+            handleIncoming(message) {
+                this.messages.push(message);
+            },
+            scrollToBottom(){
+                setTimeout(()=>{
+                    this.$refs.feed.scrollTop = this.$refs.feed.scrollHeight - this.$refs.feed.clientHeight;
+                },50);
+            },
+            sendMessage() {
+                console.log(this.orderId);
+                if ( this.message == '') {
+                    return;
+                }
+                axios.post('/api/messenger/send', {
+                    text: this.message,
+                    OrderId : this.orderId,
+                    contact_id : this.users,
+                }).then((response) => {
+                    this.messages.push(response.data);
+                    this.message = '';
+                })
+            },
             download(id){
               axios.get("/api/download/" + id).then();
             },
@@ -179,11 +241,94 @@
             getFiles(){
               axios.get("/api/getFiles/" + this.orderId).then(({ data }) => ([this.files = data]));
             },
+            getUser(){
+                if (this.$gate.isAdmin()) {
+                    axios.get("/api/getUser/" + this.orderId).then(({ data }) => ([this.users = data]));
+                }
+                if (this.$gate.isStudent()) {
+                    axios.get("/api/getAdmin/").then(({ data }) => ([this.users = data.data]));
+                }
+
+            },
+            getMessages(){
+                axios.get("/api/getMessage/" + this.orderId).then((response) => (this.messages = response.data));
+            },
+        },
+        watch: {
+            messages(messages){
+                this.scrollToBottom();
+            }
         },
         created() {
             this.getDetails();
             this.getFilesCount();
+            this.getMessages();
+            this.getUser();
             this.getFiles();
         }
     }
 </script>
+<style lang="scss" scoped>
+.composer textarea {
+    width: 80%;
+    margin: 10px;
+    border-radius: 3px;
+    border: 1px solid lightgray;
+    padding: 6px;
+}
+.conversation {
+    overflow-y: scroll;
+    flex: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    h1 {
+        font-size: 20px;
+        padding: 10px;
+        margin: 0;
+        border-bottom: 1px dashed lightgray;
+    }
+}
+.messo{
+    font-size: 15px;
+    font-weight:700;
+}
+.date{
+    color:#9e9e9e;
+    font-weight:700;
+}
+.feed {
+    background: #f0f0f0;
+    height: 100%;
+    max-height: 470px;
+    overflow: scroll;
+    ul {
+        list-style-type: none;
+        padding: 5px;
+        li {
+        &.message {
+                margin: 10px 0;
+                width: 100%;
+            .text {
+                    max-width: 400px;
+                    border-radius: 5px;
+                    padding: 12px;
+                    display: inline-block;
+                }
+            &.received {
+                    text-align: right;
+                .text {
+                        background: #00e676;
+                    }
+                }
+            &.sent {
+                    text-align: left;
+                .text {
+                        background: #81c4f9;
+                    }
+                }
+            }
+        }
+    }
+}
+</style>

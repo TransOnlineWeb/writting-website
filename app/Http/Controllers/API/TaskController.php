@@ -98,7 +98,14 @@ class TaskController extends Controller
     {
         return Files::where('task_id', $orderId)->get();
     }
-
+    public function user($orderId)
+    {
+        return Files::where('task_id', $orderId)->value('user_id');
+    }
+    public function admin()
+    {
+        return User::where('role','admin')->value('id');
+    }
     public function addFiles(Request $request, $orderId)
     {
         $request->validate([
@@ -123,7 +130,7 @@ class TaskController extends Controller
     {
         // echo $path;
         $path = Files::where('id', $id)->value('path');
-        
+
         return response()->download(storage_path('app/' . $path));
     }
 
