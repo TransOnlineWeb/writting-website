@@ -2553,6 +2553,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     user: {
@@ -2569,6 +2596,7 @@ __webpack_require__.r(__webpack_exports__);
       details: {},
       filesCount: {},
       files: {},
+      completed: {},
       attachments: [],
       formf: new FormData(),
       form: new Form({})
@@ -2595,8 +2623,19 @@ __webpack_require__.r(__webpack_exports__);
     saveNewMessage: function saveNewMessage(message) {
       this.messages.push(message);
     },
-    submit: function submit() {
+    downloadCompleted: function downloadCompleted(id) {
+      axios.get("/api/downloadcompleted/" + id).then();
+    },
+    getCompleted: function getCompleted() {
       var _this3 = this;
+
+      axios.get("/api/getcompleted/" + this.orderId).then(function (_ref) {
+        var data = _ref.data;
+        return [_this3.completed = data];
+      });
+    },
+    submit: function submit() {
+      var _this4 = this;
 
       for (var i = 0; i < this.attachments.length; i++) {
         this.formf.append('pics[]', this.attachments[i]);
@@ -2611,7 +2650,7 @@ __webpack_require__.r(__webpack_exports__);
         Fire.$emit('entry');
         $('#addnew').modal('hide');
 
-        _this3.form.reset();
+        _this4.form.reset();
 
         swal.fire({
           type: 'success',
@@ -2630,7 +2669,7 @@ __webpack_require__.r(__webpack_exports__);
       this.message = '';
     },
     sendMessage: function sendMessage(e) {
-      var _this4 = this;
+      var _this5 = this;
 
       e.preventDefault();
 
@@ -2643,9 +2682,9 @@ __webpack_require__.r(__webpack_exports__);
         OrderId: this.orderId,
         contact_id: this.users
       }).then(function (response) {
-        _this4.messages.push(response.data);
+        _this5.messages.push(response.data);
 
-        _this4.message = '';
+        _this5.message = '';
       });
     },
     fieldChange: function fieldChange(e) {
@@ -2669,51 +2708,51 @@ __webpack_require__.r(__webpack_exports__);
       axios.get("/api/download/" + id).then();
     },
     getDetails: function getDetails() {
-      var _this5 = this;
+      var _this6 = this;
 
-      axios.get("/api/task/" + this.orderId).then(function (_ref) {
-        var data = _ref.data;
-        return [_this5.details = data];
+      axios.get("/api/task/" + this.orderId).then(function (_ref2) {
+        var data = _ref2.data;
+        return [_this6.details = data];
       });
     },
     getFilesCount: function getFilesCount() {
-      var _this6 = this;
+      var _this7 = this;
 
-      axios.get("/api/ifFiles/" + this.orderId).then(function (_ref2) {
-        var data = _ref2.data;
-        return [_this6.filesCount = data];
+      axios.get("/api/ifFiles/" + this.orderId).then(function (_ref3) {
+        var data = _ref3.data;
+        return [_this7.filesCount = data];
       });
     },
     getFiles: function getFiles() {
-      var _this7 = this;
+      var _this8 = this;
 
-      axios.get("/api/getFiles/" + this.orderId).then(function (_ref3) {
-        var data = _ref3.data;
-        return [_this7.files = data];
+      axios.get("/api/getFiles/" + this.orderId).then(function (_ref4) {
+        var data = _ref4.data;
+        return [_this8.files = data];
       });
     },
     getUser: function getUser() {
-      var _this8 = this;
+      var _this9 = this;
 
       if (this.$gate.isAdmin()) {
-        axios.get("/api/getUser/" + this.orderId).then(function (_ref4) {
-          var data = _ref4.data;
-          return [_this8.users = data];
+        axios.get("/api/getUser/" + this.orderId).then(function (_ref5) {
+          var data = _ref5.data;
+          return [_this9.users = data];
         });
       }
 
       if (this.$gate.isStudent()) {
-        axios.get("/api/getAdmin/").then(function (_ref5) {
-          var data = _ref5.data;
-          return [_this8.users = data];
+        axios.get("/api/getAdmin/").then(function (_ref6) {
+          var data = _ref6.data;
+          return [_this9.users = data];
         });
       }
     },
     getMessages: function getMessages() {
-      var _this9 = this;
+      var _this10 = this;
 
       axios.get("/api/getMessage/" + this.orderId).then(function (response) {
-        return _this9.messages = response.data;
+        return _this10.messages = response.data;
       });
     }
   },
@@ -2723,21 +2762,22 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
-    var _this10 = this;
+    var _this11 = this;
 
     this.getDetails();
     this.getFilesCount();
     this.getFiles();
     this.getUser();
     this.getMessages();
+    this.getCompleted();
     Fire.$on('entry', function () {
-      _this10.getDetails();
+      _this11.getDetails();
 
-      _this10.getFilesCount();
+      _this11.getFilesCount();
 
-      _this10.getFiles();
+      _this11.getFiles();
 
-      _this10.getMessages();
+      _this11.getMessages();
     });
   }
 });
@@ -3751,6 +3791,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     user: {
@@ -3766,7 +3833,10 @@ __webpack_require__.r(__webpack_exports__);
       orderId: this.$route.params.orderId,
       details: {},
       filesCount: {},
-      files: {}
+      files: {},
+      attachments: [],
+      formf: new FormData(),
+      form: new Form({})
     };
   },
   mounted: function mounted() {
@@ -3777,18 +3847,61 @@ __webpack_require__.r(__webpack_exports__);
     });
   },
   methods: {
+    submit: function submit() {
+      var _this2 = this;
+
+      for (var i = 0; i < this.attachments.length; i++) {
+        this.formf.append('pics[]', this.attachments[i]);
+      }
+
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      axios.post('/api/completed/' + this.orderId, this.formf, config).then(function (response) {
+        Fire.$emit('entry');
+        $('#addnew').modal('hide');
+
+        _this2.form.reset();
+
+        swal.fire({
+          type: 'success',
+          title: 'Submited!!',
+          text: 'Files added successfully'
+        });
+      })["catch"](function (response) {//error
+      });
+    },
+    fieldChange: function fieldChange(e) {
+      var selectedFiles = e.target.files;
+
+      if (!selectedFiles.length) {
+        return false;
+      }
+
+      for (var i = 0; i < selectedFiles.length; i++) {
+        this.attachments.push(selectedFiles[i]);
+      }
+
+      console.log(this.attachments);
+    },
+    newModal: function newModal() {
+      this.form.reset();
+      $('#addnew').modal('show');
+    },
     handleIncoming: function handleIncoming(message) {
       this.messages.push(message);
     },
     scrollToBottom: function scrollToBottom() {
-      var _this2 = this;
+      var _this3 = this;
 
       setTimeout(function () {
-        _this2.$refs.feed.scrollTop = _this2.$refs.feed.scrollHeight - _this2.$refs.feed.clientHeight;
+        _this3.$refs.feed.scrollTop = _this3.$refs.feed.scrollHeight - _this3.$refs.feed.clientHeight;
       }, 50);
     },
     sendMessage: function sendMessage() {
-      var _this3 = this;
+      var _this4 = this;
 
       console.log(this.orderId);
 
@@ -3801,60 +3914,60 @@ __webpack_require__.r(__webpack_exports__);
         OrderId: this.orderId,
         contact_id: this.users
       }).then(function (response) {
-        _this3.messages.push(response.data);
+        _this4.messages.push(response.data);
 
-        _this3.message = '';
+        _this4.message = '';
       });
     },
     download: function download(id) {
       axios.get("/api/download/" + id).then();
     },
     getDetails: function getDetails() {
-      var _this4 = this;
+      var _this5 = this;
 
       axios.get("/api/task/" + this.orderId).then(function (_ref) {
         var data = _ref.data;
-        return [_this4.details = data];
+        return [_this5.details = data];
       });
     },
     getFilesCount: function getFilesCount() {
-      var _this5 = this;
+      var _this6 = this;
 
       axios.get("/api/ifFiles/" + this.orderId).then(function (_ref2) {
         var data = _ref2.data;
-        return [_this5.filesCount = data];
+        return [_this6.filesCount = data];
       });
     },
     getFiles: function getFiles() {
-      var _this6 = this;
+      var _this7 = this;
 
       axios.get("/api/getFiles/" + this.orderId).then(function (_ref3) {
         var data = _ref3.data;
-        return [_this6.files = data];
+        return [_this7.files = data];
       });
     },
     getUser: function getUser() {
-      var _this7 = this;
+      var _this8 = this;
 
       if (this.$gate.isAdmin()) {
         axios.get("/api/getUser/" + this.orderId).then(function (_ref4) {
           var data = _ref4.data;
-          return [_this7.users = data];
+          return [_this8.users = data];
         });
       }
 
       if (this.$gate.isStudent()) {
         axios.get("/api/getAdmin/").then(function (_ref5) {
           var data = _ref5.data;
-          return [_this7.users = data.data];
+          return [_this8.users = data.data];
         });
       }
     },
     getMessages: function getMessages() {
-      var _this8 = this;
+      var _this9 = this;
 
       axios.get("/api/getMessage/" + this.orderId).then(function (response) {
-        return _this8.messages = response.data;
+        return _this9.messages = response.data;
       });
     }
   },
@@ -85701,6 +85814,80 @@ var render = function() {
                         ]
                       )
                     : _vm._e()
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "box" }, [
+                  _vm._m(5),
+                  _vm._v(" "),
+                  this.filesCount > 0
+                    ? _c(
+                        "div",
+                        {
+                          staticClass: "box-body",
+                          staticStyle: { "padding-top": "10px" }
+                        },
+                        [
+                          _c(
+                            "div",
+                            { staticClass: "row" },
+                            _vm._l(_vm.completed, function(complete) {
+                              return _c(
+                                "div",
+                                {
+                                  key: complete.id,
+                                  staticClass: "col-md-6 col-sm-6 col-xs-12"
+                                },
+                                [
+                                  _c(
+                                    "a",
+                                    {
+                                      attrs: { href: "#" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.downloadCompleted(
+                                            complete.id
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [_vm._m(6, true)]
+                                  )
+                                ]
+                              )
+                            }),
+                            0
+                          )
+                        ]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  this.filesCount == 0
+                    ? _c(
+                        "div",
+                        {
+                          staticClass: "alert alert-warning alert-dismissible"
+                        },
+                        [
+                          _c(
+                            "button",
+                            {
+                              staticClass: "close",
+                              attrs: {
+                                type: "button",
+                                "data-dismiss": "alert",
+                                "aria-hidden": "true"
+                              }
+                            },
+                            [_vm._v("×")]
+                          ),
+                          _vm._v(" "),
+                          _vm._m(7),
+                          _vm._v(
+                            "\n                                    No files attached!!\n                                "
+                          )
+                        ]
+                      )
+                    : _vm._e()
                 ])
               ])
             ]),
@@ -85819,7 +86006,7 @@ var render = function() {
           { staticClass: "modal-dialog", attrs: { role: "document" } },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(5),
+              _vm._m(8),
               _vm._v(" "),
               _c(
                 "form",
@@ -85846,7 +86033,7 @@ var render = function() {
                     ])
                   ]),
                   _vm._v(" "),
-                  _vm._m(6)
+                  _vm._m(9)
                 ]
               )
             ])
@@ -85892,7 +86079,48 @@ var staticRenderFns = [
         "span",
         {
           staticClass: "info-box-icon",
-          staticStyle: { "background-color": "green" }
+          staticStyle: { "background-color": "#a60de2" }
+        },
+        [
+          _c("i", {
+            staticClass: "fas fa-download",
+            staticStyle: { color: "white" }
+          })
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "info-box-content" }, [
+        _c("span", { staticClass: "info-box-text" }, [_vm._v("Download")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h5", [
+      _c("i", { staticClass: "icon fa fa-ban" }),
+      _vm._v(" Alert!")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "box-header" }, [
+      _c("h5", { staticClass: "box-title" }, [_vm._v("Completed")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "info-box" }, [
+      _c(
+        "span",
+        {
+          staticClass: "info-box-icon",
+          staticStyle: { "background-color": "#31d125" }
         },
         [
           _c("i", {
@@ -87337,7 +87565,26 @@ var render = function() {
                   ])
                 ]),
                 _vm._v(" "),
-                _vm._m(10)
+                _c("div", { staticClass: "box" }, [
+                  _vm._m(10),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "box-body" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-success",
+                        attrs: { type: "button" },
+                        on: { click: _vm.newModal }
+                      },
+                      [
+                        _c("i", { staticClass: "fas fa-cloud-upload-alt" }),
+                        _vm._v(
+                          "\n            Upload Completed Task\n          "
+                        )
+                      ]
+                    )
+                  ])
+                ])
               ])
             ])
           ]),
@@ -87430,7 +87677,61 @@ var render = function() {
           ])
         ])
       ])
-    ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "addnew",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "addnewLabel",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(11),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.submit()
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "files" } }, [
+                        _vm._v("Select File")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "form-control-file",
+                        attrs: { type: "file", multiple: "", id: "files" },
+                        on: { change: _vm.fieldChange }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm._m(12)
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
   ])
 }
 var staticRenderFns = [
@@ -87555,21 +87856,55 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "box" }, [
-      _c("div", { staticClass: "box-header" }, [
-        _c("h5", { staticClass: "box-title" }, [_vm._v("Upload")])
+    return _c("div", { staticClass: "box-header" }, [
+      _c("h5", { staticClass: "box-title" }, [_vm._v("Upload")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h5", { staticClass: "modal-title", attrs: { id: "addnewLabel" } }, [
+        _vm._v("Upload File")
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "box-body" }, [
-        _c(
-          "button",
-          { staticClass: "btn btn-success", attrs: { type: "button" } },
-          [
-            _c("i", { staticClass: "fas fa-cloud-upload-alt" }),
-            _vm._v("\n            Upload Completed Task\n          ")
-          ]
-        )
-      ])
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-danger",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Close")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        { staticClass: "btn btn-success", attrs: { type: "submit" } },
+        [
+          _c("i", { staticClass: "fas fa-cloud-upload-alt" }),
+          _vm._v("\n                          Upload\n                        ")
+        ]
+      )
     ])
   }
 ]
@@ -104810,14 +105145,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!****************************************************!*\
   !*** ./resources/js/components/MyOrderDetails.vue ***!
   \****************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MyOrderDetails_vue_vue_type_template_id_44740a0b_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MyOrderDetails.vue?vue&type=template&id=44740a0b&scoped=true& */ "./resources/js/components/MyOrderDetails.vue?vue&type=template&id=44740a0b&scoped=true&");
 /* harmony import */ var _MyOrderDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MyOrderDetails.vue?vue&type=script&lang=js& */ "./resources/js/components/MyOrderDetails.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _MyOrderDetails_vue_vue_type_style_index_0_id_44740a0b_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MyOrderDetails.vue?vue&type=style&index=0&id=44740a0b&lang=scss&scoped=true& */ "./resources/js/components/MyOrderDetails.vue?vue&type=style&index=0&id=44740a0b&lang=scss&scoped=true&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _MyOrderDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _MyOrderDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _MyOrderDetails_vue_vue_type_style_index_0_id_44740a0b_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MyOrderDetails.vue?vue&type=style&index=0&id=44740a0b&lang=scss&scoped=true& */ "./resources/js/components/MyOrderDetails.vue?vue&type=style&index=0&id=44740a0b&lang=scss&scoped=true&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -104849,7 +105185,7 @@ component.options.__file = "resources/js/components/MyOrderDetails.vue"
 /*!*****************************************************************************!*\
   !*** ./resources/js/components/MyOrderDetails.vue?vue&type=script&lang=js& ***!
   \*****************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -104897,14 +105233,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*********************************************!*\
   !*** ./resources/js/components/Myoders.vue ***!
   \*********************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Myoders_vue_vue_type_template_id_390fcc2a___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Myoders.vue?vue&type=template&id=390fcc2a& */ "./resources/js/components/Myoders.vue?vue&type=template&id=390fcc2a&");
 /* harmony import */ var _Myoders_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Myoders.vue?vue&type=script&lang=js& */ "./resources/js/components/Myoders.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Myoders_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Myoders_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -104934,7 +105271,7 @@ component.options.__file = "resources/js/components/Myoders.vue"
 /*!**********************************************************************!*\
   !*** ./resources/js/components/Myoders.vue?vue&type=script&lang=js& ***!
   \**********************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -105173,14 +105510,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!**************************************************!*\
   !*** ./resources/js/components/OrderDetails.vue ***!
   \**************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _OrderDetails_vue_vue_type_template_id_2f18ce02_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./OrderDetails.vue?vue&type=template&id=2f18ce02&scoped=true& */ "./resources/js/components/OrderDetails.vue?vue&type=template&id=2f18ce02&scoped=true&");
 /* harmony import */ var _OrderDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./OrderDetails.vue?vue&type=script&lang=js& */ "./resources/js/components/OrderDetails.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _OrderDetails_vue_vue_type_style_index_0_id_2f18ce02_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./OrderDetails.vue?vue&type=style&index=0&id=2f18ce02&lang=scss&scoped=true& */ "./resources/js/components/OrderDetails.vue?vue&type=style&index=0&id=2f18ce02&lang=scss&scoped=true&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _OrderDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _OrderDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _OrderDetails_vue_vue_type_style_index_0_id_2f18ce02_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./OrderDetails.vue?vue&type=style&index=0&id=2f18ce02&lang=scss&scoped=true& */ "./resources/js/components/OrderDetails.vue?vue&type=style&index=0&id=2f18ce02&lang=scss&scoped=true&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -105212,7 +105550,7 @@ component.options.__file = "resources/js/components/OrderDetails.vue"
 /*!***************************************************************************!*\
   !*** ./resources/js/components/OrderDetails.vue?vue&type=script&lang=js& ***!
   \***************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

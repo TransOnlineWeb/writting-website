@@ -2,27 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d67399ab-a3c2-4ce6-9490-5edcda03281d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Events/ChatEvent.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/API/MessangerController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Listeners/ChatListener.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Messenger.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2019_09_06_072228_create_messengers_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Completed.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/API/CompletedController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2019_09_05_162921_create_completed_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/API/TaskController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/API/TaskController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Message.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Message.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Providers/EventServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Providers/EventServiceProvider.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/Chat.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/Chat.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/components/MyOrderDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/MyOrderDetails.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/components/Myoders.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/Myoders.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/components/OrderDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/OrderDetails.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/TaskOrders.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/TaskOrders.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/layouts/dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/layouts/dashboard.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/channels.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/channels.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -229,6 +217,7 @@
       <workItem from="1569420504153" duration="587000" />
       <workItem from="1569477718403" duration="4392000" />
       <workItem from="1569489661678" duration="121000" />
+      <workItem from="1569501265236" duration="1707000" />
     </task>
     <servers />
   </component>

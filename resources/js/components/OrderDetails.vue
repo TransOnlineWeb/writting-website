@@ -139,7 +139,7 @@
               <h5 class="box-title">Upload</h5>
             </div>
             <div class="box-body">
-              <button type="button" class="btn btn-success">
+              <button type="button" class="btn btn-success" @click="newModal">
                 <i class="fas fa-cloud-upload-alt"></i>
                 Upload Completed Task
               </button>
@@ -176,6 +176,33 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="addnew" tabindex="-1" role="dialog" aria-labelledby="addnewLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addnewLabel">Upload File</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form @submit.prevent="submit()">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="files">Select File</label>
+                                <input type="file" multiple class="form-control-file" @change="fieldChange" id="files">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">
+                              <i class="fas fa-cloud-upload-alt"></i>
+                              Upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -195,7 +222,12 @@
                 orderId: this.$route.params.orderId,
                 details: {},
                 filesCount: {},
-                files: {}
+                files: {},
+                attachments:[],
+                formf: new FormData(),
+                form: new Form({
+
+                })
             }
         },
         mounted() {
@@ -205,6 +237,43 @@
                 })
         },
         methods:{
+          submit(){
+              for(let i=0; i<this.attachments.length;i++){
+                    this.formf.append('pics[]',this.attachments[i]);
+                }
+
+                const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+
+              axios.post('/api/completed/' + this.orderId,this.formf,config).then(response=>{
+                Fire.$emit('entry');
+                $('#addnew').modal('hide');
+                this.form.reset();
+                swal.fire({
+                      type: 'success',
+                      title: 'Submited!!',
+                      text: 'Files added successfully',
+
+                    })
+
+                })
+                    .catch(response=>{
+                        //error
+                    });
+            },
+          fieldChange(e){
+                let selectedFiles=e.target.files;
+                if(!selectedFiles.length){
+                    return false;
+                }
+                for(let i=0;i<selectedFiles.length;i++){
+                    this.attachments.push(selectedFiles[i]);
+                }
+                console.log(this.attachments);
+            },
+          newModal(){
+                this.form.reset();
+                $('#addnew').modal('show');
+            },
             handleIncoming(message) {
                 this.messages.push(message);
             },

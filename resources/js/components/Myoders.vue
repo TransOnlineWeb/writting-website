@@ -101,7 +101,7 @@
                 form: new Form({
                     status: '',
                     id: ''
-                })
+                }),
             }
         },
         mounted() {

@@ -36,6 +36,10 @@ Route::post('addFiles/{orderId}','API\TaskController@addFiles');
 Route::apiResources(['messenger'=>'API\MessangerController']);
 Route::get('download/{id}','API\TaskController@downloadFile');
 
+Route::post('completed/{orderId}','API\CompletedController@store');
+Route::get('getcompleted/{orderId}','API\CompletedController@show');
+Route::get('downloadcompleted/{orderId}','API\CompletedController@downloadCompleted');
+
 Route::get('contacts','API\ContactsController@index');
 Route::get('student','API\ContactsController@student');
 Route::get('conversation/{id}','API\ContactsController@getMessagesFor');
