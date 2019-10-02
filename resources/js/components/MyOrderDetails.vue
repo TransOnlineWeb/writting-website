@@ -42,7 +42,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Deadline</td>
-                                                <td><span>{{details.deadline_datetime}}</span></td>
+                                                <td><i class="fa fa-clock-o mr-1"></i><span>{{details.deadline_datetime}}</span></td>
                                             </tr>
                                             <tr>
                                                 <td>Spacing</td>
@@ -128,8 +128,10 @@
                            <div class="row">
                             <div class="card-body conversation" >
                                 <h1>Messages</h1>
+                                <div class=" badge badge-pill badge-primary">{{typing}}</div>
                                 <div class="card-body feed" ref="feed">
                                     <ul>
+
                                         <li v-for="message in messages" :class="`message${message.to == users ? ' sent' : ' received'}`" :key="message.id">
                                             <div class="text">
                                                 <span class="messo">{{ message.text }}</span><br/><small class="date">{{message.created_at | myDate}}</small>
@@ -181,6 +183,7 @@
         data(){
             return{
                 message: '',
+                typing:'',
                 users : {},
                 messages:[],
                 orderId: this.$route.params.orderId,
@@ -189,16 +192,25 @@
                 files: {},
                 completed: {},
                 attachments:[],
+                unreadIds:{},
                 formf: new FormData(),
                 form: new Form({
                 })
             }
         },
+
         mounted() {
             Echo.private(`message.${this.user.id}`)
                 .listen('ChatEvent',(e)=>{
                     this.messages.push(e.message);
                 })
+                .listenForWhisper('typing', (e) => {
+                    if(e.name != ''){
+                       this.typing ='typing..'
+                    }else{
+                        this.typing = ''
+                    }
+                });
         },
         methods:{
             handleIncoming(message) {
@@ -304,11 +316,20 @@
             getMessages(){
                 axios.get("/api/getMessage/" + this.orderId).then((response) => (this.messages = response.data));
             },
+            getUnread(){
+                axios.get("/api/unread/" + this.orderId).then((response) => (this.unreadIds = response['unread']));
+            },
         },
         watch: {
             messages(messages){
                 this.scrollToBottom();
-            }
+            },
+            message() {
+                Echo.private(`message.${this.user.id}`)
+                    .whisper('typing', {
+                        name: this.message
+                    });
+            },
         },
         created() {
             this.getDetails();

@@ -162,6 +162,7 @@
                 <div class="row">
                     <div class="card-body conversation"  @new="handleIncoming">
                         <h1>Messages</h1>
+                        <div class=" badge badge-pill badge-primary">{{typing}}</div>
                         <div class="card-body feed" ref="feed">
                             <ul>
                                 <li v-for="message in messages" :class="`message${message.to == users ? ' sent' : ' received'}`" :key="message.id">
@@ -217,6 +218,7 @@
         data(){
             return{
                 message: '',
+                typing: '',
                 users : {},
                 messages:[],
                 orderId: this.$route.params.orderId,
@@ -235,6 +237,13 @@
                 .listen('ChatEvent',(e)=>{
                     this.messages.push(e.message);
                 })
+                .listenForWhisper('typing', (e) => {
+                    if(e.name != ''){
+                       this.typing = 'typing..'
+                    }else{
+                       this.typing = ''
+                    }
+                });
         },
         methods:{
           submit(){
@@ -326,7 +335,13 @@
         watch: {
             messages(messages){
                 this.scrollToBottom();
-            }
+            },
+            message() {
+                Echo.private(`message.${this.user.id}`)
+                    .whisper('typing', {
+                        name: this.message
+                    });
+            },
         },
         created() {
             this.getDetails();
