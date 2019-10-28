@@ -12,4 +12,5 @@
         </div>
     </header>
 	<Order></Order>
+    @include('includes.footer')
 @endsection
