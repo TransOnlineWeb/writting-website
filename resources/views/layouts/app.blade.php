@@ -24,7 +24,7 @@
     <div id="app">
         <header>
             <nav class="navbar navbar-expand-md fixed-top font">
-                <a class="navbar-brand text-light" href="/">My Assignments Experts</a>
+                <a class="navbar-brand text-light" href="/">AssignmentsExperts</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
                 </button>
@@ -58,13 +58,13 @@
                                     <li class="nav-item">
                                         <a href="/task" class="btn btn-lg btn-success">Submit An Order</a>
                                     </li>
-                                    <li class="nav-item dropdown">
+                                    <li class="nav-item dropdown">s
                                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                             {{ Auth::user()->name }} <span class="caret"></span>
                                         </a>
 
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                            <a class="dropdown-item" href="/myorders">My Orders</a>
+                                            <a class="dropdown-item" href="/order">My Orders</a>
                                             <a class="dropdown-item" href="">My Profile</a>
                                             <a class="dropdown-item" href="{{ route('logout') }}"
                                                onclick="event.preventDefault();
