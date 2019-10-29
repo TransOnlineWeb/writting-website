@@ -16,7 +16,7 @@
         <div>
             <header>
                 <nav class="navbar navbar-expand-md fixed-top font">
-                    <a class="navbar-brand text-light" href="#">My Assignments Experts</a>
+                    <a class="navbar-brand text-light" href="#">AssignmentsExperts</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                       <span class="navbar-toggler-icon"></span>
                     </button>
@@ -48,12 +48,17 @@
                                             </li>
                                         @endif
                                     @else
+                                        <li class="nav-item">
+                                            <a href="/task" class="btn btn-lg btn-success">Submit An Order</a>
+                                        </li>
                                         <li class="nav-item dropdown">
                                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                                 {{ Auth::user()->name }} <span class="caret"></span>
                                             </a>
 
                                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                                <a class="dropdown-item" href="/order">My Orders</a>
+                                                <a class="dropdown-item" href="">My Profile</a>
                                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                                    onclick="event.preventDefault();
                                                                  document.getElementById('logout-form').submit();">
@@ -86,14 +91,14 @@
                                             @endif
                                         @endauth
                                     </li>
-                                </ul>  
+                                </ul>
                               </div>
                           @endif
                       </div> --}}
                     </div>
                   </nav>
             </header>
-            <!---------------- banner section ----------------------> 
+            <!---------------- banner section ---------------------->
 
             <div class="home">
                 <div class="hero-text">
@@ -173,8 +178,12 @@
                 </div>
                 
               </div>
+              <h4 class="featurette text-center px-5 pt-3">Let us take care of your order details while you enjoy your free time!</h4>
+              <div class="center">
+                <a href="" class="btn btn-lg btn-success">Make An Order</a>
+              </div>
             </div>
-             
+
              @include('includes.footer')
         </div>
         <!-- Scripts -->

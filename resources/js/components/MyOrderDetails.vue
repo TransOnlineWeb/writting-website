@@ -1,4 +1,4 @@
- <template>
+<template>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -119,13 +119,13 @@
                                 <div class="card-body composer">
                                     <textarea v-model="message"  placeholder="Write your question here..."></textarea><br>
                                     <div class="col-md-10">
-                                    <button class="btn btn-success btn-md pull-left"  @click="sendMessage"><i class="fas fa-paper-plane"></i>&nbsp;Send message</button>
-                                      <button class="btn btn-primary btn-md pull-right" @click="newModal"><i class="fas fa-paperclip"></i>&nbsp;Add Files</button>
+                                        <button class="btn btn-success btn-md pull-left"  @click="sendMessage"><i class="fas fa-paper-plane"></i>&nbsp;Send message</button>
+                                        <button class="btn btn-primary btn-md pull-right" @click="newModal"><i class="fas fa-paperclip"></i>&nbsp;Add Files</button>
                                     </div>
                                 </div>
                             </div>
-                           </div><hr>
-                           <div class="row">
+                        </div><hr>
+                        <div class="row">
                             <div class="card-body conversation" >
                                 <h1>Messages</h1>
                                 <div class=" badge badge-pill badge-primary">{{typing}}</div>
@@ -174,16 +174,11 @@
 
 <script>
     export default {
-        props:{
-            user: {
-                type: Object,
-                required: true
-            }
-        },
         data(){
             return{
                 message: '',
                 typing:'',
+                user : {},
                 users : {},
                 messages:[],
                 orderId: this.$route.params.orderId,
@@ -200,13 +195,13 @@
         },
 
         mounted() {
-            Echo.private(`message.${this.user.id}`)
+            Echo.private(`message.${user['id']}`)
                 .listen('ChatEvent',(e)=>{
                     this.messages.push(e.message);
                 })
                 .listenForWhisper('typing', (e) => {
                     if(e.name != ''){
-                       this.typing ='typing..'
+                        this.typing ='typing..'
                     }else{
                         this.typing = ''
                     }
@@ -214,7 +209,7 @@
         },
         methods:{
             handleIncoming(message) {
-                    this.messages.push(message);
+                this.messages.push(message);
 
             },
             scrollToBottom(){
@@ -232,20 +227,20 @@
                 axios.get("/api/getcompleted/" + this.orderId).then(({ data }) => ([this.completed = data]));
             },
             submit(){
-              for(let i=0; i<this.attachments.length;i++){
+                for(let i=0; i<this.attachments.length;i++){
                     this.formf.append('pics[]',this.attachments[i]);
                 }
 
                 const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 
-              axios.post('/api/addFiles/' + this.orderId,this.formf,config).then(response=>{
-                Fire.$emit('entry');
-                $('#addnew').modal('hide');
-                this.form.reset();
-                swal.fire({
-                      type: 'success',
-                      title: 'Submited!!',
-                      text: 'Files added successfully',
+                axios.post('/api/addFiles/' + this.orderId,this.formf,config).then(response=>{
+                    Fire.$emit('entry');
+                    $('#addnew').modal('hide');
+                    this.form.reset();
+                    swal.fire({
+                        type: 'success',
+                        title: 'Submited!!',
+                        text: 'Files added successfully',
 
                     })
 
@@ -304,17 +299,14 @@
             getFiles(){
                 axios.get("/api/getFiles/" + this.orderId).then(({ data }) => ([this.files = data]));
             },
-            getUser(){
-                if (this.$gate.isAdmin()) {
-                    axios.get("/api/getUser/" + this.orderId).then(({ data }) => ([this.users = data]));
-                }
-                if (this.$gate.isStudent()) {
-                    axios.get("/api/getAdmin/").then(({ data }) => ([this.users = data]));
-                }
-
+            getThisUser(){
+                axios.get("/api/getThisUser/" + this.orderId).then(({ data }) => ([this.user = data]));
             },
             getMessages(){
                 axios.get("/api/getMessage/" + this.orderId).then((response) => (this.messages = response.data));
+            },
+            getUser(){
+                axios.get("/api/getAdmin/").then(({ data }) => ([this.users = data]));
             },
             getUnread(){
                 axios.get("/api/unread/" + this.orderId).then((response) => (this.unreadIds = response['unread']));
@@ -325,7 +317,7 @@
                 this.scrollToBottom();
             },
             message() {
-                Echo.private(`message.${this.user.id}`)
+                Echo.private(`message.${user['id']}`)
                     .whisper('typing', {
                         name: this.message
                     });
@@ -336,78 +328,81 @@
             this.getFilesCount();
             this.getFiles();
             this.getUser();
+            this.getThisUser();
             this.getMessages();
             this.getCompleted();
             Fire.$on('entry', () =>{
                 this.getDetails();
                 this.getFilesCount();
                 this.getFiles();
+                this.getUser();
                 this. getMessages();
+                this.getThisUser();
             })
         }
     }
 </script>
- <style lang="scss" scoped>
-     .composer textarea {
-         width: 80%;
-         margin: 10px;
-         border-radius: 3px;
-         border: 1px solid lightgray;
-         padding: 6px;
-     }
-     .conversation {
-         overflow-y: scroll;
-         flex: 5;
-         display: flex;
-         flex-direction: column;
-         justify-content: space-between;
-         h1 {
-             font-size: 20px;
-             padding: 10px;
-             margin: 0;
-             border-bottom: 1px dashed lightgray;
-         }
-     }
-     .messo{
-         font-size: 15px;
-         font-weight:700;
-     }
-     .date{
-         color:#9e9e9e;
-         font-weight:700;
-     }
-     .feed {
-         background: #f0f0f0;
-         height: 100%;
-         max-height: 470px;
-         overflow: scroll;
-         ul {
-             list-style-type: none;
-             padding: 5px;
-             li {
-                 &.message {
-                     margin: 10px 0;
-                     width: 100%;
-                     .text {
-                         max-width: 400px;
-                         border-radius: 5px;
-                         padding: 12px;
-                         display: inline-block;
-                     }
-                     &.received {
-                         text-align: right;
-                         .text {
-                             background: #00e676;
-                         }
-                     }
-                     &.sent {
-                         text-align: left;
-                         .text {
-                             background: #81c4f9;
-                         }
-                     }
-                 }
-             }
-         }
-     }
- </style>
+<style lang="scss" scoped>
+    .composer textarea {
+        width: 80%;
+        margin: 10px;
+        border-radius: 3px;
+        border: 1px solid lightgray;
+        padding: 6px;
+    }
+    .conversation {
+        overflow-y: scroll;
+        flex: 5;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        h1 {
+            font-size: 20px;
+            padding: 10px;
+            margin: 0;
+            border-bottom: 1px dashed lightgray;
+        }
+    }
+    .messo{
+        font-size: 15px;
+        font-weight:700;
+    }
+    .date{
+        color:#9e9e9e;
+        font-weight:700;
+    }
+    .feed {
+        background: #f0f0f0;
+        height: 100%;
+        max-height: 470px;
+        overflow: scroll;
+        ul {
+            list-style-type: none;
+            padding: 5px;
+            li {
+                &.message {
+                    margin: 10px 0;
+                    width: 100%;
+                    .text {
+                        max-width: 400px;
+                        border-radius: 5px;
+                        padding: 12px;
+                        display: inline-block;
+                    }
+                    &.received {
+                        text-align: right;
+                        .text {
+                            background: #00e676;
+                        }
+                    }
+                    &.sent {
+                        text-align: left;
+                        .text {
+                            background: #81c4f9;
+                        }
+                    }
+                }
+            }
+        }
+    }
+</style>
