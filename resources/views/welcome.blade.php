@@ -178,10 +178,6 @@
                 </div>
                 
               </div>
-              <h4 class="featurette text-center px-5 pt-3">Let us take care of your order details while you enjoy your free time!</h4>
-              <div class="center">
-                <a href="" class="btn btn-lg btn-success">Make An Order</a>
-              </div>
             </div>
 
              @include('includes.footer')
